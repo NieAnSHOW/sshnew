@@ -22,7 +22,19 @@ public class PerssDao {
 
 
     public void addPerson(Persona persona){
-        getSession().save(persona);
+        getSession().saveOrUpdate(persona);
+        String hql = "from Persona where id = ?";
+        Persona up = (Persona)getSession().createQuery(hql).setParameter(0,persona.getId()).uniqueResult();
+        String hql_1 = "from Persona where created = ? and username = ?";
+        List<Persona> la =(List<Persona>)getSession().createQuery(hql_1).setParameter(0,"cc1").setParameter(1,"123").list();
+        for (Persona persona1 : la) {
+            persona1.setCreated("cc1");
+            persona1.setUsername(up.getUsername());
+            persona1.setPhone(up.getPhone());
+            persona1.setAddress(up.getAddress());
+            persona1.setRemark(up.getRemark());
+            updatePerson(persona1);
+        }
     }
 
     public void delPerson(int id){
@@ -31,7 +43,10 @@ public class PerssDao {
 
     public void updatePerson(Persona persona){
         getSession().update(persona);
+
     }
+
+
 
     public List<Persona> findPerson(){
         return (List<Persona>)getSession().createCriteria(Persona.class).list();
